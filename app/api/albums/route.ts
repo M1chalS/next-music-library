@@ -1,30 +1,39 @@
 import {NextResponse} from "next/server";
 import {SheetsConnection} from "sheets-simplified";
 import {googleAuthWrapper} from "@/libs/google-auth-wrapper";
-import {Album} from "@/libs/Album";
+import {ValueInputOption} from "sheets-simplified/build/types/types";
 
 const sheetsConnection = new SheetsConnection({
     auth: googleAuthWrapper,
     spreadsheetId: process.env.SPREADSHEET_ID!,
     sheet: "Albums",
-    range: "A2:F",
+    range: "A1:F",
+    includeValuesInResponse: true,
+    valueInputOption: ValueInputOption.USER_ENTERED,
+    firstRowAsHeader: true,
 });
 
 export async function GET() {
     const res = await sheetsConnection.get();
 
-    if(!res.data.values) return Response.error();
+    if(!res.data.values) return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
 
-    const albums : Album[] = res.data.values.map((album: string[]) => {
-        return {
-            title: album[0],
-            year: album[1],
-            playbackTime: album[2],
-            songs: Number(album[3]),
-            photo: album[4],
-            author: album[5],
-        }
-    });
+    return NextResponse.json(res.data.values);
+}
 
-    return NextResponse.json(albums);
+export async function POST(request: Request) {
+    const body = await request.json();
+
+    if(!body) return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
+
+    const res = await sheetsConnection.append([[
+        body.title,
+        body.year,
+        body.playbackTime,
+        body.songs,
+        body.photo,
+        body.author,
+    ]]);
+
+    return NextResponse.json(res);
 }

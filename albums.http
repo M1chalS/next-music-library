@@ -1,0 +1,16 @@
+### Get
+GET http://localhost:3000/api/albums
+Content-Type: application/json
+
+### Post
+POST http://localhost:3000/api/albums
+Content-Type: application/json
+
+{
+    "title": "Album 1",
+    "year": "2020-02-20",
+    "playbackTime": "44 min 44 sec",
+    "songs": 10,
+    "photo": "https://picsum.photos/200",
+    "author": "Random Author"
+}
