@@ -4,10 +4,13 @@ import {useEffect, useState} from "react";
 import {Album} from "@/libs/Album";
 import AlbumCard from "@/components/AlbumCard";
 import CreateAlbumCard from "@/components/CreateAlbumCard";
+import {CloseIcon} from "next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon";
+import {Edit} from "@mui/icons-material";
 
 export default function HomePage() {
     const [albums, setAlbums] = useState([]);
     const [showCreateCard, setShowCreateCard] = useState(false);
+    const [editMode, setEditMode] = useState(false);
 
     const fetchAlbums = async () => {
         const res = await fetch("http://localhost:3000/api/albums").then(res => res.json());
@@ -26,10 +29,10 @@ export default function HomePage() {
 
     return (
         <Box>
-            <h1>Albums</h1>
+            <Box display="flex" flexDirection="row" justifyContent="space-between" alignContent="center"><h1>Albums</h1><Edit style={{ cursor: "pointer" }} onClick={() => setEditMode(!editMode)}/></Box>
             {albums.length > 0 ? <Grid container spacing={2} style={{margin: "auto", justifyContent: "center"}}>
                     {albums.map((album: Album) => {
-                        return <Grid item xs={6} md={4}><AlbumCard album={album}/></Grid>;
+                        return <Grid item xs={6} md={4}><AlbumCard album={album} editMode={editMode}/></Grid>;
                     })}
                     <Grid item xs={6} md={4}>
                         {!showCreateCard ? <Button size="large" sx={{width: 350, height: 450}} variant="outlined"
